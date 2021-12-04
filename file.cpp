@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <stdio.h>
 
 int longestIncreasingSubsequenceSize(std::vector<int> v);
 
@@ -27,9 +28,26 @@ int longestIncreasingSubsequenceSize(std::vector<int> v) {
 
 int main() {
 
+    int problemType;
+    char c = '-';
     std::vector<int> v;
 
-    v.push_back(1);
+    std::cin >> problemType;
+
+    c = getchar(); //Discard the '\n' at the end of first input
+    while ((c = getchar()) != '\n') {
+        if (c >= '0' && c <= '9') {
+            v.push_back(c - '0');
+            std::cout << c;
+            std::cout << " next ";
+        }
+    }
+
+    for (int i = 0; i < v.size(); i++) {
+        std::cout << "indice " << i << " tem " << v.at(i) << "\n";
+    }
+
+    /*v.push_back(1);
     v.push_back(2);
     v.push_back(6);
     v.push_back(3);
@@ -37,7 +55,7 @@ int main() {
     v.push_back(4);
     v.push_back(1234);
 
-    std::cout << longestIncreasingSubsequenceSize(v) << std::endl;
+    std::cout << longestIncreasingSubsequenceSize(v) << std::endl;*/
 
     return 0;
 }
