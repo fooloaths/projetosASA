@@ -42,20 +42,6 @@ int main() {
             std::cout << " next ";
         }
     }
-
-    for (int i = 0; i < v.size(); i++) {
-        std::cout << "indice " << i << " tem " << v.at(i) << "\n";
-    }
-
-    /*v.push_back(1);
-    v.push_back(2);
-    v.push_back(6);
-    v.push_back(3);
-    v.push_back(7);
-    v.push_back(4);
-    v.push_back(1234);
-
-    std::cout << longestIncreasingSubsequenceSize(v) << std::endl;*/
-
+    
     return 0;
 }
