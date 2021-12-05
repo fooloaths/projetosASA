@@ -1,15 +1,38 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
-#include <stdio.h>
+#include <cstring>
+#include <string.h>
 
-//auxiliary function, will delete
-//given a vector, print it's contents
+//TESTING FUNCTIONS********************TESTING FUNCTIONS******************************************//
 void printVector(std::vector<int> v){
     for(int i = 0; i < (int) v.size(); i++){
         printf("%d ", v[i]);
     }
     printf("\n");
+}
+
+std::vector<int> generateVector(int n){
+    std::vector<int> v(n);
+    for(int i = 0; i < n; i++){
+        v.push_back(rand());
+    }
+    return v;
+}
+//**************************************TESTING FUNCTIONS*****************************************//
+
+//abstraction of string processing
+void stringProcessing(std::vector<int> &v){
+  std::string str;  
+  getline(std::cin, str);
+  char *cstr = &str[0];
+  char *ptr;
+  ptr = strtok(cstr, " ");
+  while (ptr != NULL && *ptr != '\n')
+  { 
+    v.push_back(atoi(ptr));
+    ptr = strtok(NULL, " ");  
+  }
 }
 
 //O(n^2) needs to be O(nlog(n))
@@ -18,10 +41,10 @@ void printVector(std::vector<int> v){
 std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
 {
   //Base Case
-  if (nums.size() == 0)
-    return std::make_tuple(0, 0);
- 
   int n = nums.size();
+  
+  if (n == 0)
+    return std::make_tuple(0, 0);
  
   //Initialize dp_l array with
   // 1s
@@ -76,45 +99,38 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
 //solves problem 2
 //i think this can be solved by mixing the longest common subsequence and longest increasing subsequence problems into one
 //given two vectors, finds the size and number of longest common increasing subsequences
-std::tuple<int, int> findLengthAndNumberOfLICS(std::vector<int> v1, std::vector<int> v2) {
-}
 
-int main() {
-    //vectors for testing
-    std::vector<int> v = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
-    std::vector<int> v1 = {1, 2, 6, 3, 7};
-    std::vector<int> v2 = {1, 2, 4, 7, 3};
-    
-    //FIXME: input doesn't work
-    /*
-    int problemType;
-    char c = '-';
-    
+/* std::tuple<int, int> findLengthAndNumberOfLICS(std::vector<int> v1, std::vector<int> v2) {
+} */
 
-    std::cin >> problemType;
+int main() {  
+  std::vector<int> v1;
+  std::vector<int> v2;
+  int problemType;
 
-    c = getchar(); //Discard the '\n' at the end of first input
-    while ((c = getchar()) != '\n') {
-        if (c >= '0' && c <= '9') {
-            v.push_back(c - '0');
-        }
-    }
-    */
+  //scanf return value is how many arguments it read
+  int p = scanf("%d\n", &problemType);
+  //not sure what to handle here
+  if (p != 1) {
+    exit(1);
+  }
 
-
-    //FIXME: implement switch statement for selecting problems
-
-    auto result = findLengthAndNumberOfLIS(v);
-    //problema 1
+  if (problemType == 1) {
+    stringProcessing(v1);
+    //SOLUTION
+    auto result = findLengthAndNumberOfLIS(v1);
     printf("problema 1\n");
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
-    //problema 2
-    
+  }
+  else if (problemType == 2) {
+    stringProcessing(v1);
+    stringProcessing(v2);
+    //SOLUTION
     /*
     printf("problema 2\n");
     auto result = findLengthAndNumberOfLICS(v1, v2);
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
     */
-    
-    return 0;
+  }
+  return 0;
 }
