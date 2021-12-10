@@ -239,7 +239,7 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
     sum += std::get<1>(auxLastLevel[i]);
   }
 
-  return std::make_tuple(auxLastLevelIndex, sum);
+  return std::make_tuple(auxLastLevelIndex + 1, sum);
 }
 
 
