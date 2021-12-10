@@ -32,7 +32,7 @@ int count(std::vector<tuple<int, int>> pares, int k) {
 }
 
 
-CheckThreeCases(std::vector<vector<tuple(int, int)>>> arr, int k):
+processValue(std::vector<vector<tuple(int, int)>>> arr, int k):
 
   Let size = arr.size();
   for (int i = size; i > 0; i--) {
@@ -41,11 +41,16 @@ CheckThreeCases(std::vector<vector<tuple(int, int)>>> arr, int k):
     sizeLIS = pares.size() //Ver se este é um bom nome de variável
 
     counter = count(pares, k);
-    if (i < size) //Is within bounds
-      insert(arr[i + 1], tuple(k, counter))
-    else {
-        std::vector<tuple<int, int>>>() tmp = vector<tuple<int, int>>>()
-        tmp.push_back(tuple(k, counter));
-        arr.push_back(tmp);
-        insert(arr[i + 1], tuple(k, counter));
+    if (counter > 0) {
+      if (i < size) //Is within bounds
+        insert(arr[i + 1], tuple(k, counter))
+        break;
+      else {
+          std::vector<tuple<int, int>>>() tmp = vector<tuple<int, int>>>()
+          tmp.push_back(tuple(k, counter));
+          arr.push_back(tmp);
+          insert(arr[i + 1], tuple(k, counter));
+          break;
+       }
+     }
     }
