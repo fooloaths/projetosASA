@@ -1,6 +1,6 @@
-Problem 1(std::vector<vector<int>> arr):
+std::tuple<int, int>(std::vector<vector<int>> arr):
 
-  Let size = array.size()
+  int size = arr.size()
   std::vector<vector<tuple(int, int)>>> aux = vector<vector<tuple(int, int)>>>();
 
   if (size > 0)
