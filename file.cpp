@@ -4,7 +4,7 @@
 #include <cstring>
 #include <string.h>
 
-//TESTING FUNCTIONS********************TESTING FUNCTIONS******************************************//
+//*************************************TESTING FUNCTIONS******************************************
 void printVector(std::vector<std::tuple<int, int>> v){
     for (long unsigned int i = 0; i <  v.size(); i++) {
         printf("%d %d\n", std::get<0>(v[i]), std::get<1>(v[i]));
@@ -37,7 +37,7 @@ void printVector2(std::vector<std::vector<std::tuple<int, int>>> arr) {
   printf("###############################################################\n");
 }
 
-//**************************************TESTING FUNCTIONS*****************************************//
+//**************************************TESTING FUNCTIONS*****************************************
 
 //abstraction of string processing
 void stringProcessing(std::vector<int> &v){
@@ -115,54 +115,93 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
 }
 
 void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
+  //printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+  //printf("                    insert\n");
+  //printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
   int cmp = std::get<0>(t);
-  for (long unsigned int i = 0; i <  arr.size(); i++) {
-    if (std::get<0>(arr[i]) < cmp) {
+  //printf("o tuplo a inserir é: (%d, %d)\n", std::get<0>(t), std::get<1>(t));
+  //printf("O tamanho do vector onde vai ser inserido é %ld\n", arr.size());
+  for (long unsigned int i = 0; i < arr.size(); i++) {
+    //printf("Estamos na iteração nº%d, com o i = %d\n", i + 1, i);
+    //printf("O tuplo neste posição é (%d, %d) e queremos inserir o (%d, %d)\n", std::get<0>(arr[i]), std::get<1>(arr[i]), std::get<0>(t), std::get<1>(t));
+    if (arr.size() == 1) { // If there is only one tuple on this level
+	//printf("Este nível só tem um tuplo e, ");
+	if (std::get<0>(arr[i]) < cmp) {
+		//printf("como ele é menor que o novo, vamos inserir no seu lugar\n");
+		arr.insert(arr.begin() + i, t);
+		break;
+	}
+	else {
+		//printf("como ele é maior que o novo, vamos fazer push back do novo\n");
+		arr.push_back(t);
+	}
+    }
+    else if (std::get<0>(arr[i]) < cmp) {
+      //printf("Este tuplo é menor do que o que queremos inserir. Portanto vamos meter o nosso tuplo no índice %d\n", i);
       arr.insert(arr.begin() + i, t);
       break;
     } 
   }
+  //printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 }
 
 int count(std::vector<std::tuple<int, int>> pares, int k) {
+    //printf("\n?????????????????????????????????????????????\n");
+    //printf("              count\n");
+    //printf("??????????????????????????????????????????????\n");
+    //printf("O valor que estamos a comparar é %d\n", k);
     int sizeLIS = pares.size();
+    //printf("O número de tuplos neste nível é %d\n", sizeLIS);
     int counter = 0;
     int j = sizeLIS - 1;
-    while ((j > 0) && (std::get<0>(pares[j]) < k)) {
+    while ((j >= 0) && (std::get<0>(pares[j]) < k)) {
       counter += std::get<1>(pares[j]);
       j--;
     }
+    //printf("?????????????????????????????????????????????????\n");
     return counter;
 } 
 
 void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
   int size = arr.size();
-  for (int i = size - 1; i > 0; i--) {
-
+  //printf("\n------------------------------------------------------\n");
+  //printf("              processValue\n");
+  //printf("------------------------------------------------------\n");
+  //printf("O tamanho atual do vetor é %d\n", size);
+  //printf("O valor a processar é %d\n", k);
+  for (int i = size - 1; i >= 0; i--) {		//Voltar aqui para tentar trocar o >= por um >
+    //printf("Estamos a começar o nível %d, ou seja, i é %d\n", i + 1, i);
     auto pares = arr[i];
     // int sizeLIS = pares.size(); //Ver se este é um bom nome de variável
 
+    //printf("Vamos chamar o count para ver quantos são menor\n");
     auto counter = count(pares, k);
+    //printf("A resposta é %d\n", counter);
     if (counter > 0) {
-      if (i < size) { //Is within bounds
+      //printf("O i é %d, o nível é %d e o size é %d, por isso vamos ter de ", i, i + 1, size);
+      if (i < (size - 1)) { //Is within bounds
+	//printf("simplesmente inserir o tuplo no nível a cima\n");
         insert(arr[i + 1], std::make_tuple(k, counter));
         break;
       }
       else {
+	//printf("criar mais um nível para depois inserir o novo tuplo\n");
         std::vector<std::tuple<int, int>> tmp = std::vector<std::tuple<int, int>>();
         tmp.push_back(std::make_tuple(k, counter));
         arr.push_back(tmp);
-        insert(arr[i + 1], std::make_tuple(k, counter));
+	//printf("O nível foi criado, por isso agora o size é %ld\n", arr.size());
         break;
       }
     }
   }
+  //printf("------------------------------------------------------\n");
 }
 
 std::tuple<int, int> problem1(std::vector<int> nums) {
   int size = nums.size();
   auto aux = std::vector<std::vector<std::tuple<int, int>>>();
 
+  //printf("Testing the size of input array: %d\n", size);
   if (size > 0) {
     auto t = std::make_tuple(nums.at(0),1);
     auto tmp = std::vector<std::tuple<int,int>>();
@@ -182,7 +221,10 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
       continue;
     }
 
-    processValue(aux, k); 
+    processValue(aux, k);
+    /*printf("???????????????\n");
+    printf("Reaching end of %dth iteration of problem1\n", i + 1);
+    printf("???????????????\n");*/
   }
   
   // aí talvez seja melhor fazermos um for loop extra, em que percorres só o último nível 
@@ -197,7 +239,7 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
     sum += std::get<1>(auxLastLevel[i]);
   }
 
-  return std::make_tuple(auxLastLevelIndex, sum);
+  return std::make_tuple(auxLastLevelIndex + 1, sum);
 }
 
 
