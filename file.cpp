@@ -6,7 +6,7 @@
 
 //TESTING FUNCTIONS********************TESTING FUNCTIONS******************************************//
 void printVector(std::vector<std::tuple<int, int>> v){
-    for (int i = 0; i < (int) v.size(); i++) {
+    for (long unsigned int i = 0; i <  v.size(); i++) {
         printf("%d %d\n", std::get<0>(v[i]), std::get<1>(v[i]));
     }
     printf("\n");
@@ -116,7 +116,7 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
 
 void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   int cmp = std::get<0>(t);
-  for (int i = 0; i < (int) arr.size(); i++) {
+  for (long unsigned int i = 0; i <  arr.size(); i++) {
     if (std::get<0>(arr[i]) < cmp) {
       arr.insert(arr.begin() + i, t);
       break;
@@ -193,7 +193,7 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
   int auxLastLevelIndex = aux.size() - 1;
   auto auxLastLevel = aux[auxLastLevelIndex];
   int sum = 0;
-  for (int i = 0; i < (int) auxLastLevel.size(); i++) {
+  for (long unsigned int i = 0; i <  auxLastLevel.size(); i++) {
     sum += std::get<1>(auxLastLevel[i]);
   }
 
