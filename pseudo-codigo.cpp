@@ -1,12 +1,15 @@
-std::tuple<int, int>(std::vector<vector<int>> arr):
+#include <tuple>
+#include <vector>
 
-  int size = arr.size()
-  std::vector<vector<tuple(int, int)>>> aux = vector<vector<tuple(int, int)>>>();
+std::tuple<int, int> problem1(std::vector<std::vector<int>> arr) {
+
+  auto size = arr.size();
+  auto aux = new std::vector<std::vector<std::tuple<int, int>>>();
 
   if (size > 0)
-    aux[0].push_back(tuple(nums.at(0), 1))
+    aux[0].push_back(std::make_tuple(arr.at(0), 1))
 
-  std::vector<tuple<int, int>> firstLevel = aux[0];
+  auto firstLevel = aux[0];
 
   for (int i = 0; i < size; i++) {
     int k = array[i];

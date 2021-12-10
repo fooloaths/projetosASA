@@ -5,9 +5,9 @@
 #include <string.h>
 
 //TESTING FUNCTIONS********************TESTING FUNCTIONS******************************************//
-void printVector(std::vector<int> v){
-    for(int i = 0; i < (int) v.size(); i++){
-        printf("%d ", v[i]);
+void printVector(std::vector<std::tuple<int, int>> v){
+    for (int i = 0; i < (int) v.size(); i++) {
+        printf("%d %d\n", std::get<0>(v[i]), std::get<1>(v[i]));
     }
     printf("\n");
 }
@@ -19,6 +19,24 @@ std::vector<int> generateVector(int n){
     }
     return v;
 }
+
+void printVector2(std::vector<std::vector<std::tuple<int, int>>> arr) {
+  printf("###############################################################\n");
+  printf("            Curent Vector Representation\n");
+  printf("###############################################################\n");
+  int nlevels = arr.size();
+  for (int i = 0; i < nlevels; i++) {
+    printf("%d | ", i + 1);
+    std::vector<std::tuple<int, int>> ithlevel = arr[i];
+    int sizeLevel = ithlevel.size();
+    for (int j = 0; j < sizeLevel; j++) {
+        printf("(%d, %d), ", std::get<0>(ithlevel[j]), std::get<1>(ithlevel[j]));
+    }
+    printf("\n");
+  }
+  printf("###############################################################\n");
+}
+
 //**************************************TESTING FUNCTIONS*****************************************//
 
 //abstraction of string processing
@@ -96,8 +114,52 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
   return std::make_tuple(max_length, count);
 }
 
-std::tuple<int, int> problem1(std::vector<int> nums) {
+void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
+  int cmp = std::get<0>(t);
+  for (int i = 0; i < (int) arr.size(); i++) {
+    if (std::get<0>(arr[i]) < cmp) {
+      arr.insert(arr.begin() + i, t);
+      break;
+    } 
+  }
+}
 
+int count(std::vector<std::tuple<int, int>> pares, int k) {
+    int sizeLIS = pares.size();
+    int counter = 0;
+    int j = sizeLIS - 1;
+    while ((j > 0) && (std::get<0>(pares[j]) < k)) {
+      counter += std::get<1>(pares[j]);
+      j--;
+    }
+    return counter;
+} 
+
+void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
+  int size = arr.size();
+  for (int i = size - 1; i > 0; i--) {
+
+    auto pares = arr[i];
+    // int sizeLIS = pares.size(); //Ver se este é um bom nome de variável
+
+    auto counter = count(pares, k);
+    if (counter > 0) {
+      if (i < size) { //Is within bounds
+        insert(arr[i + 1], std::make_tuple(k, counter));
+        break;
+      }
+      else {
+        std::vector<std::tuple<int, int>> tmp = std::vector<std::tuple<int, int>>();
+        tmp.push_back(std::make_tuple(k, counter));
+        arr.push_back(tmp);
+        insert(arr[i + 1], std::make_tuple(k, counter));
+        break;
+      }
+    }
+  }
+}
+
+std::tuple<int, int> problem1(std::vector<int> nums) {
   int size = nums.size();
   auto aux = std::vector<std::vector<std::tuple<int, int>>>();
 
@@ -113,52 +175,30 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
   for (int i = 0; i < size; i++) {
     int k = nums[i];
     int sizeFirstLevel = firstLevel.size();
-
+    
     if (k < std::get<1>(firstLevel[sizeFirstLevel - 1]))  {//Se isto não der para fazer com tuplos, troca os tuplos por arrays com 2 elementos
       //Smaller than all LIS on this level (smallest pair is always at last index)
       firstLevel.push_back(std::make_tuple(k, 1));
       continue;
     }
 
-    processValue(aux, k);
-
+    processValue(aux, k); 
   }
+  
+  // aí talvez seja melhor fazermos um for loop extra, em que percorres só o último nível 
+  // do aux e vais somando numa variável todas as segundas entradas dos tuplos nesse nível
+
+  //TODO abstract as a function
+  printVector2(aux);
+  int auxLastLevelIndex = aux.size() - 1;
+  auto auxLastLevel = aux[auxLastLevelIndex];
+  int sum = 0;
+  for (int i = 0; i < (int) auxLastLevel.size(); i++) {
+    sum += std::get<1>(auxLastLevel[i]);
+  }
+
+  return std::make_tuple(auxLastLevelIndex, sum);
 }
-
-// int count(std::vector<std::tuple<int, int>> pares, int k) {
-//     int counter = 0;
-//     int j = sizeLIS - 1;
-//       while ((j > 0) && (pares[j].get(0) < k)) {
-//         counter += pares[j].get(1);
-//         j--
-//       }
-
-//     return counter;
-// } 
-
-
-int processValue(std::vector<std::vector<std::tuple<int, int>>> arr, int k) {
-  int size = arr.size();
-  for (int i = size; i > 0; i--) {
-
-    std::vector<std::tuple<int, int>> pares = arr[i];
-    // int sizeLIS = pares.size(); //Ver se este é um bom nome de variável
-
-    auto counter = count(pares, k);
-    if (counter > 0) {
-      if (i < size) { //Is within bounds
-        // insert(arr[i + 1], tuple(k, counter));
-        break;
-      }
-      else {
-          std::vector<std::tuple<int, int>> tmp = std::vector<std::tuple<int, int>>();
-          tmp.push_back(tuple(k, counter));
-          arr.push_back(tmp);
-          insert(arr[i + 1], tuple(k, counter));
-          break;
-       }
-     }
-    }
 
 
 //solves problem 2
@@ -183,7 +223,7 @@ int main() {
   if (problemType == 1) {
     stringProcessing(v1);
     //SOLUTION
-    auto result = findLengthAndNumberOfLIS(v1);
+    auto result = problem1(v1);
     printf("problema 1\n");
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
   }
