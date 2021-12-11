@@ -242,25 +242,34 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
   return std::make_tuple(auxLastLevelIndex + 1, sum);
 }
 
+//given two vectors, find the longest common subsequence
+//TODO change to be longest common strictly increasing subsequence
+int problem2(std::vector<int> v1, std::vector<int> v2) {
+  int matrix[v1.size() + 1][v2.size() + 1];
+  for (long unsigned int i = 0; i <= v1.size(); i++) {
+    for (long unsigned int j = 0; j <= v2.size(); j++) {
+      if (i == 0 || j == 0) {
+        matrix[i][j] = 0; 
+      }
+      else if (v1[i - 1] == v2[j - 1]) {
+        matrix[i][j] = matrix[i - 1][j - 1] + 1;
+      }
+      else {
+        matrix[i][j] = std::max(matrix[i - 1][j], matrix[i][j - 1]);
+      }
+    }
+  }
 
-//solves problem 2
-//i think this can be solved by mixing the longest common subsequence and longest increasing subsequence problems into one
-//given two vectors, finds the size and number of longest common increasing subsequences
-
-/* std::tuple<int, int> findLengthAndNumberOfLICS(std::vector<int> v1, std::vector<int> v2) {
-} */
+  return matrix[v1.size()][v2.size()];
+} 
 
 int main() {  
   std::vector<int> v1;
   std::vector<int> v2;
   int problemType;
 
-  //scanf return value is how many arguments it read
   int p = scanf("%d\n", &problemType);
-  //not sure what to handle here
-  if (p != 1) {
-    exit(1);
-  }
+  if (p != 1) { return(1); }
 
   if (problemType == 1) {
     stringProcessing(v1);
@@ -272,12 +281,10 @@ int main() {
   else if (problemType == 2) {
     stringProcessing(v1);
     stringProcessing(v2);
-    //SOLUTION
-    /*
     printf("problema 2\n");
-    auto result = findLengthAndNumberOfLICS(v1, v2);
-    printf("%d %d\n", std::get<0>(result), std::get<1>(result));
-    */
+    auto result = problem2(v1, v2);
+    printf("%d\n", result);
   }
+  else { return -1;}
   return 0;
 }
