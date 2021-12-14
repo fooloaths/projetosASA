@@ -173,14 +173,20 @@ void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
     //printf("Estamos a começar o nível %d, ou seja, i é %d\n", i + 1, i);
     auto pares = arr[i];
     // int sizeLIS = pares.size(); //Ver se este é um bom nome de variável
+        if (k < std::get<0>(pares[pares.size() - 1])) {
+      // Se o K for menor que todos os tuplos neste nível, podemos ignorá-lo por agora
+      continue;
+    }
 
     //printf("Vamos chamar o count para ver quantos são menor\n");
-    auto counter = count(pares, k);
+    auto counter = count(pares, k); //Ver se algum tuplo passou a estar inativo: Provavelmente ver se count > 0 durante a iteração
     //printf("A resposta é %d\n", counter);
     if (counter > 0) {
       //printf("O i é %d, o nível é %d e o size é %d, por isso vamos ter de ", i, i + 1, size);
       if (i < (size - 1)) { //Is within bounds
 	//printf("simplesmente inserir o tuplo no nível a cima\n");
+
+        //Falta verificar se existe um tuplo com k no nível i + 1, se sim, em vez de insert, temos de dar merge
         insert(arr[i + 1], std::make_tuple(k, counter));
         break;
       }
