@@ -37,6 +37,11 @@ void printVector2(std::vector<std::vector<std::tuple<int, int>>> arr) {
   printf("###############################################################\n");
 }
 
+void printTuple(std::tuple<int, int> t) {
+  printf("(%d, %d)", std::get<0>(t), std::get<1>(t));
+}
+
+
 //**************************************TESTING FUNCTIONS*****************************************
 
 //abstraction of string processing
@@ -172,6 +177,7 @@ void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
   for (int i = size - 1; i >= 0; i--) {		//Voltar aqui para tentar trocar o >= por um >
     //printf("Estamos a começar o nível %d, ou seja, i é %d\n", i + 1, i);
     auto pares = arr[i];
+    //printf("O tuplo mais pequeno neste nível é "); printTuple(pares[pares.size() - 1]); printf("\n");
     // int sizeLIS = pares.size(); //Ver se este é um bom nome de variável
         if (k < std::get<0>(pares[pares.size() - 1])) {
       // Se o K for menor que todos os tuplos neste nível, podemos ignorá-lo por agora
@@ -215,15 +221,19 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
     aux.push_back(tmp);
   }
 
-  auto firstLevel = aux[0];
+  //auto firstLevel = aux[0];
 
   for (int i = 0; i < size; i++) {
     int k = nums[i];
-    int sizeFirstLevel = firstLevel.size();
+    //int sizeFirstLevel = firstLevel.size();
+    int sizeFirstLevel = aux[0].size();
     
-    if (k < std::get<1>(firstLevel[sizeFirstLevel - 1]))  {//Se isto não der para fazer com tuplos, troca os tuplos por arrays com 2 elementos
+    //printf("problem 1: o nosso k é %d\n", k);
+    //printf("problem 1: vamos começar por comparar ao mais pequeno que é "); printTuple(aux[0][sizeFirstLevel - 1]); printf("\n");
+
+    if (k < std::get<0>(aux[0][sizeFirstLevel - 1]))  {//Se isto não der para fazer com tuplos, troca os tuplos por arrays com 2 elementos
       //Smaller than all LIS on this level (smallest pair is always at last index)
-      firstLevel.push_back(std::make_tuple(k, 1));
+      aux[0].push_back(std::make_tuple(k, 1));
       continue;
     }
 
