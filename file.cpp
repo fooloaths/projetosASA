@@ -4,6 +4,11 @@
 #include <cstring>
 #include <string.h>
 
+#define DUPLICATE -1
+
+/* Se o count num nível é 0, mas encontrámos um tuplo com K igual ao que queremos inserir, então temos de aumentar o nº
+ de subsequências de forma proporcional. A forma mais fácil deve ser duplicar esse tuplo (crying inside) */
+
 //*************************************TESTING FUNCTIONS******************************************
 void printVector(std::vector<std::tuple<int, int>> v){
     for (long unsigned int i = 0; i <  v.size(); i++) {
@@ -119,6 +124,7 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
   return std::make_tuple(max_length, count);
 }
 
+//void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
 void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   //printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
   //printf("                    insert\n");
@@ -126,23 +132,21 @@ void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   int cmp = std::get<0>(t);
   //printf("o tuplo a inserir é: (%d, %d)\n", std::get<0>(t), std::get<1>(t));
   //printf("O tamanho do vector onde vai ser inserido é %ld\n", arr.size());
+  if (std::get<0>(arr[arr.size() - 1]) > cmp) { //If it is smaller than the smallest tuple on this level
+    //printf("Como é mais pequeno que o menor tuplo neste nível, fazemos push back\n")
+    arr.push_back(t);
+  }
   for (long unsigned int i = 0; i < arr.size(); i++) {
-    //printf("Estamos na iteração nº%d, com o i = %d\n", i + 1, i);
+    //printf("Estamos na iteração nº%ld, com o i = %ld\n", i + 1, i);
     //printf("O tuplo neste posição é (%d, %d) e queremos inserir o (%d, %d)\n", std::get<0>(arr[i]), std::get<1>(arr[i]), std::get<0>(t), std::get<1>(t));
-    if (arr.size() == 1) { // If there is only one tuple on this level
-	//printf("Este nível só tem um tuplo e, ");
-	if (std::get<0>(arr[i]) < cmp) {
-		//printf("como ele é menor que o novo, vamos inserir no seu lugar\n");
-		arr.insert(arr.begin() + i, t);
-		break;
-	}
-	else {
-		//printf("como ele é maior que o novo, vamos fazer push back do novo\n");
-		arr.push_back(t);
-	}
+    if (std::get<0>(arr[i]) == cmp) {
+      //arr.swap(arr[i], t);
+      //printf("Como são iguais, vamos dar swap aos tuplos.\n");
+      arr[i].swap(t);
+      break;
     }
     else if (std::get<0>(arr[i]) < cmp) {
-      //printf("Este tuplo é menor do que o que queremos inserir. Portanto vamos meter o nosso tuplo no índice %d\n", i);
+      //printf("Este tuplo é menor do que o que queremos inserir. Portanto vamos meter o nosso tuplo no índice %ld\n", i);
       arr.insert(arr.begin() + i, t);
       break;
     } 
@@ -150,7 +154,7 @@ void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   //printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 }
 
-int count(std::vector<std::tuple<int, int>> pares, int k) {
+int count(std::vector<std::tuple<int, int>> &pares, int k) {
     //printf("\n?????????????????????????????????????????????\n");
     //printf("              count\n");
     //printf("??????????????????????????????????????????????\n");
@@ -158,14 +162,41 @@ int count(std::vector<std::tuple<int, int>> pares, int k) {
     int sizeLIS = pares.size();
     //printf("O número de tuplos neste nível é %d\n", sizeLIS);
     int counter = 0;
-    int j = sizeLIS - 1;
+    int j = sizeLIS - 1;    
     while ((j >= 0) && (std::get<0>(pares[j]) < k)) {
       counter += std::get<1>(pares[j]);
       j--;
     }
+    if (std::get<0>(pares[j]) == k && counter == 0) {
+      pares.insert(pares.begin() + j, pares[j]);
+      return DUPLICATE;
+    }
+    
+    /*std::vector<std::tuple<int, int>>::reverse_iterator j = pares.rbegin();
+    for (; j != pares.rend() && (std::get<0>(*j) < k); j++) {
+      counter += std::get<1>(*j);
+    }*/
+    /*while ((j < sizeLIS) && (std::get<0>(pares[j]) < k)) {
+      counter += std::get<1>(pares[j]);
+      j++;
+    }*/
+    /*if (std::get<0>(*j) == k) {
+      j = pares.erase(j);  //Vamos ter de usar ponteiros para isto funcionar. Se partir algo, remover isto
+    }*/
     //printf("?????????????????????????????????????????????????\n");
     return counter;
-} 
+}
+
+int tupleInLevel(int k, std::vector<std::tuple<int, int>> &arr) {
+
+  int size = arr.size() - 1;  
+  for (int i = 0; i < size; i++) {
+    if (std::get<0>(arr[i]) == k) {
+      return std::get<1>(arr[i]);
+    }
+  }
+  return 0;
+}
 
 void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
   int size = arr.size();
@@ -185,23 +216,30 @@ void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
     }
 
     //printf("Vamos chamar o count para ver quantos são menor\n");
-    auto counter = count(pares, k); //Ver se algum tuplo passou a estar inativo: Provavelmente ver se count > 0 durante a iteração
+    //auto counter = count(pares, k); //Ver se algum tuplo passou a estar inativo: Provavelmente ver se count > 0 durante a iteração
+    auto counter = count(arr[i], k);
     //printf("A resposta é %d\n", counter);
+    if (counter == DUPLICATE) {
+      break;
+    }
     if (counter > 0) {
       //printf("O i é %d, o nível é %d e o size é %d, por isso vamos ter de ", i, i + 1, size);
       if (i < (size - 1)) { //Is within bounds
-	//printf("simplesmente inserir o tuplo no nível a cima\n");
+	      //printf("simplesmente inserir o tuplo no nível a cima\n");
 
         //Falta verificar se existe um tuplo com k no nível i + 1, se sim, em vez de insert, temos de dar merge
+        ///////int numSeqs = tupleInLevel(k, arr[i + 1]);
+        //insert(arr[i + 1], std::make_tuple(k, counter));
+        //insert(arr[i + 1], std::make_tuple(k, counter + numSeqs)); //Para usar esta versão, temos de apagar o (k, num) que está neste nível antes
         insert(arr[i + 1], std::make_tuple(k, counter));
         break;
       }
       else {
-	//printf("criar mais um nível para depois inserir o novo tuplo\n");
+	      //printf("criar mais um nível para depois inserir o novo tuplo\n");
         std::vector<std::tuple<int, int>> tmp = std::vector<std::tuple<int, int>>();
         tmp.push_back(std::make_tuple(k, counter));
         arr.push_back(tmp);
-	//printf("O nível foi criado, por isso agora o size é %ld\n", arr.size());
+	      //printf("O nível foi criado, por isso agora o size é %ld\n", arr.size());
         break;
       }
     }
@@ -223,7 +261,7 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
 
   //auto firstLevel = aux[0];
 
-  for (int i = 0; i < size; i++) {
+  for (int i = 1; i < size; i++) {
     int k = nums[i];
     //int sizeFirstLevel = firstLevel.size();
     int sizeFirstLevel = aux[0].size();
