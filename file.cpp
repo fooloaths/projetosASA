@@ -363,7 +363,9 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
   //printf("-----------------------------------------------------\n");
   //printf("           FindAllLCS\n");
   //printf("-----------------------------------------------------\n");
+  //printf("o i é %d e o j é %d\n", i, j);
   if (j == 0 || i == 0) {
+    //printf("aaaaaaaaa?\n");
     //printf("Chegámos ao caso base\n");
     std::set<std::vector<int>> emptySet;
     return emptySet;
@@ -372,12 +374,14 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
     //printf("Vamos buscar a cima ou à esquerda\n");
     std::set<std::vector<int>> a;
     std::set<std::vector<int>> b;
-    if (matrix[i - 1][j] >= matrix[i][j - 1]) {
+    if (matrix[i - 2][j - 1] >= matrix[i - 1][j - 2]) {
       //If value came from cell to the left
+      //printf("bbbbbbbbbb\n");
       a = findAllLCS(matrix, i - 1, j, n, m);
     }
-    if (matrix[i][j - 1] >= matrix[i - 1][j]) {
+    if (matrix[i - 1][j - 2] >= matrix[i - 2][j - 1]) {
       //If value came from cell directly above
+      //printf("cccccccccc\n");
       b = findAllLCS(matrix, i, j - 1, n, m);
     }
 
@@ -443,7 +447,14 @@ std::vector<std::vector<int>>  computeLCSMatrix(std::vector<int> v1, std::vector
 int problem2(std::vector<int> v1, std::vector<int> v2) {
   std::vector<std::vector<int>> matrix = computeLCSMatrix(v1, v2);
 
-  //printMatrix(matrix, v1, v2);
+  /*printf("----Array 1-----\n");
+  printf("O tamanho é %ld\n", v1.size());
+  for (auto i : v1) {printf("%d, ", i);} printf("\n-----------\n");  
+  printf("----Array 2-----\n");
+    printf("O tamanho é %ld\n", v2.size());
+  for (auto i : v2) {printf("%d, ", i);} printf("\n-----------\n");
+
+  printMatrix(matrix, v1, v2);*/
 
   std::set<std::vector<int>> LCIS = findAllLCS(matrix, v1.size() + 1, v2.size() + 1, v1, v2);
 
