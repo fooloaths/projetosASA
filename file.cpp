@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <set>
 #include <cstring>
 #include <string.h>
 
@@ -44,6 +45,23 @@ void printVector2(std::vector<std::vector<std::tuple<int, int>>> arr) {
 
 void printTuple(std::tuple<int, int> t) {
   printf("(%d, %d)", std::get<0>(t), std::get<1>(t));
+}
+
+void printMatrix(std::vector<std::vector<int>> matrix, std::vector<int> a, std::vector<int> b) {
+  printf("###############################################################\n");
+  printf("            LCS Matrix Representation\n");
+  printf("###############################################################\n");
+  printf("i\\j|0|"); for (auto i : b) {printf("%d|", i);} printf("\n");
+  int i = -1;
+  for (auto line : matrix) {
+    printf("%d  |", a[i]); i++;
+    for (auto cell : line) {
+      printf("%d|", cell);
+
+    }
+    printf("\n");
+  }
+  printf("###############################################################\n");
 }
 
 
@@ -296,10 +314,114 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
   return std::make_tuple(auxLastLevelIndex + 1, sum);
 }
 
-//given two vectors, find the longest common subsequence
-//TODO change to be longest common strictly increasing subsequence
-int problem2(std::vector<int> v1, std::vector<int> v2) {
-  int matrix[v1.size() + 1][v2.size() + 1];
+std::set<std::vector<int>> mergeSets(std::set<std::vector<int>> &a, std::set<std::vector<int>> &b) {
+  for (auto subseq : b) {
+    a.insert(subseq);
+  }
+  return a;
+}
+
+std::set<std::vector<int>> extendSequences(std::set<std::vector<int>> &a, int value) {
+  std::set<std::vector<int>> result;
+  for (auto subseq : a) {
+    if (subseq[subseq.size() - 1] >= value) {
+      continue; //Value can't extend this subsequence
+    }
+    else {
+      subseq.push_back(value);
+      result.insert(subseq);
+    }
+  }
+  if (result.size() == 0) {
+    result = a;
+  }
+  return result;
+}
+
+void printCurrentLCSs(std::set<std::vector<int>> set) {
+  printf("##########################################\n");
+  printf("           printCurrentLCS\n");
+  printf("##########################################\n");
+  if (set.size() > 0) {
+    for (auto subseq : set) {
+      printf("{");
+      for (auto value : subseq) {
+        printf("%d, ",value);
+      }
+      printf("};");
+    }
+    printf("\n");
+  }
+  else {
+    printf("O tamanho do set é 0\n");
+  }
+  printf("##########################################\n");
+}
+
+
+std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int i, int j, std::vector<int> n, std::vector<int> m) {
+  //printf("-----------------------------------------------------\n");
+  //printf("           FindAllLCS\n");
+  //printf("-----------------------------------------------------\n");
+  if (j == 0 || i == 0) {
+    //printf("Chegámos ao caso base\n");
+    std::set<std::vector<int>> emptySet;
+    return emptySet;
+  }
+  else if (n[i - 1] != m[j - 1]) { //If matrix[i][j] was computed from cell directly above or to the left
+    //printf("Vamos buscar a cima ou à esquerda\n");
+    std::set<std::vector<int>> a;
+    std::set<std::vector<int>> b;
+    if (matrix[i - 1][j] >= matrix[i][j - 1]) {
+      //If value came from cell to the left
+      a = findAllLCS(matrix, i - 1, j, n, m);
+    }
+    if (matrix[i][j - 1] >= matrix[i - 1][j]) {
+      //If value came from cell directly above
+      b = findAllLCS(matrix, i, j - 1, n, m);
+    }
+
+    //Combine results and return
+    //printf("Vamos dar merge aos dois ramos. Os tamanhos de cada um eram %ld e %ld\n", a.size(), b.size());
+    a = mergeSets(a,b);
+    //printf("Agora o tamanho do merged é %ld\n", a.size());
+    //printCurrentLCSs(a);
+    return a;
+  }
+  //else if (n[i] == m[j]) {
+  else {
+    //If matrix[i][j] was computed by incrementing the diagonal value
+    //printf("Vamos para a diagonal\n");
+    int value = n[i - 1]; //Value to be appended to the end of the subsequence
+
+    std::set<std::vector<int>> a = findAllLCS(matrix, i - 1, j - 1, n, m);
+    //printf("Vamos extender as sequências. O nº de sequências é %ld e vamos extendê-las com %d\n", a.size(), value);
+    //Combine results
+    std::set<std::vector<int>> result;
+    if (a.size() != 0) {
+      //printf("Vamos extender normalmente\n");
+      //printf("O tamanho do set era %ld\n", a.size());
+      result = extendSequences(a, value);
+      //printf("Passou a ser %ld e o tamanho do result é %ld\n", a.size(), result.size());
+    }
+    else {
+      std::vector<int> seq = std::vector<int>();
+      seq.push_back(value);
+      a.insert(seq);
+      result = a;
+    }
+    //printf("bbbbbbbbbbbbbbbb\n");
+    //printCurrentLCSs(result);
+    //printf("aaaaaaaaaaaaaaa\n");
+    return result;
+  }
+}
+
+//int** computeLCSMatrix(std::vector<int> v1, std::vector<int> v2) {
+std::vector<std::vector<int>>  computeLCSMatrix(std::vector<int> v1, std::vector<int> v2) {
+
+  std::vector<std::vector<int>> matrix(v1.size() + 1, std::vector<int>(v2.size() + 1, 0));
+  //int matrix[v1.size() + 1][v2.size() + 1];
   for (long unsigned int i = 0; i <= v1.size(); i++) {
     for (long unsigned int j = 0; j <= v2.size(); j++) {
       if (i == 0 || j == 0) {
@@ -313,9 +435,65 @@ int problem2(std::vector<int> v1, std::vector<int> v2) {
       }
     }
   }
+  return matrix;
+}
 
-  return matrix[v1.size()][v2.size()];
-} 
+//given two vectors, find the longest common subsequence
+//TODO change to be longest common strictly increasing subsequence
+int problem2(std::vector<int> v1, std::vector<int> v2) {
+  std::vector<std::vector<int>> matrix = computeLCSMatrix(v1, v2);
+
+  //printMatrix(matrix, v1, v2);
+
+  std::set<std::vector<int>> LCIS = findAllLCS(matrix, v1.size() + 1, v2.size() + 1, v1, v2);
+
+  long unsigned int maxSize = 0;
+  for (auto subseq : LCIS) {      //Temos de testar com vários inputs. Não sei se todas estas subSeqs são estritamente crescentes
+    if (subseq.size() > maxSize) { //Tb não estou sure se têm todas o mesmo tamanho. Se a resposta a ambas for sim,
+      maxSize = subseq.size();    //basta dar return de o size de 1 delas, em vez de percorrer todas
+    }
+  }
+  return maxSize;
+  //return matrix[v1.size()][v2.size()];
+}
+
+
+/*std::set<std::vector<int>> findAllLCS(int **matrix, int i, int j, std::vector<int> n, std::vector<int> m) {
+  if (j == 0 || i == 0) {
+    std::set<std::vector<int>> emptySet;
+    return emptySet;
+  }
+  else if (n[i] != m[j]) { //If matrix[i][j] was computed from cell directly above or to the left
+
+    std::set<std::vector<int>> a;
+    std::set<std::vector<int>> b;
+    if (matrix[i - 1][j] >= matrix[i][j - 1]) {
+      //If value came from cell to the left
+      a = findAllLCS(matrix, i - 1, j, n, m);
+    }
+    if (matrix[i][j - 1] >= matrix[i - 1][j]) {
+      //If value came from cell directly above
+      b = findAllLCS(matrix, i, j - 1, n, m);
+    }
+
+    //Combine results and return
+    a = mergeSets(a,b);
+    return a;
+    //return mergeSets(a, b);
+  }
+  //else if (n[i] == m[j]) {
+  else {
+    //If matrix[i][j] was computed by incrementing the diagonal value
+
+    int value = n[i]; //Value to be appended to the end of the subsequence
+
+    std::set<std::vector<int>> a = findAllLCS(matrix, i - 1, j - 1, n, m);
+
+    //Combine results
+    std::set<std::vector<int>> result = extendSequences(a, value);
+    return result;
+  }
+}*/
 
 int main() {  
   std::vector<int> v1;
