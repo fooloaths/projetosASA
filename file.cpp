@@ -365,28 +365,33 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
   printf("-----------------------------------------------------\n");
   printf("o i é %d e o j é %d\n", i, j);
   printf("O n[] aqui é %d e o m[] é %d\n", n[i - 1], m[j - 1]);
+  printf("O n[] aqui é %d e o m[] é %d\n", n[i - 2], m[j - 2]);
   printf("O matrix[i - 1][j - 1] é %d\n", matrix[i - 1][j - 1]);
+  if ((long unsigned int) i <= n.size() && (long unsigned int) j <= m.size()) {
+    printf("O matrix[i][j] é %d\n", matrix[i][j]);
+  }
   printf("O size do n é %ld,o size do m é %ld e o size da matriz é %ld\n", n.size(), m.size(),matrix.size());*/
-  if (j == 0 || i == 0 || (((long unsigned int) i <= n.size() && (long unsigned int) j <= m.size()) && matrix[i][j] == 0)) { //(matrix[i - 1][j - 1] == 0 && n[i - 1] != m[j - 1])
+  if (j == 1 || i == 1 || (((long unsigned int) i <= n.size() && (long unsigned int) j <= m.size()) && matrix[i][j] == 0)) { //(matrix[i - 1][j - 1] == 0 && n[i - 1] != m[j - 1])
     //printf("aaaaaaaaa?\n");
     //printf("Chegámos ao caso base\n");
     std::set<std::vector<int>> emptySet;
     return emptySet;
   }
-  else if (n[i - 1] != m[j - 1]) { //If matrix[i][j] was computed from cell directly above or to the left
+  //else if (n[i - 1] != m[j - 1]) { //If matrix[i][j] was computed from cell directly above or to the left
+  else if (n[i - 2] != m[j - 2]) { //If matrix[i][j] was computed from cell directly above or to the left
     //printf("Vamos buscar a cima ou à esquerda\n");
     std::set<std::vector<int>> a;
     std::set<std::vector<int>> b;
-    if (matrix[i - 2][j - 1] >= matrix[i - 1][j - 2]) {
+    //if (matrix[i - 2][j - 1] >= matrix[i - 1][j - 2]) {
       //If value came from cell to the left
       //printf("bbbbbbbbbb\n");
       a = findAllLCS(matrix, i - 1, j, n, m);
-    }
-    if (matrix[i - 1][j - 2] >= matrix[i - 2][j - 1]) {
+    //}
+    //if (matrix[i - 1][j - 2] >= matrix[i - 2][j - 1]) {
       //If value came from cell directly above
       //printf("cccccccccc\n");
       b = findAllLCS(matrix, i, j - 1, n, m);
-    }
+    //}
 
     //Combine results and return
     //printf("Vamos dar merge aos dois ramos. Os tamanhos de cada um eram %ld e %ld\n", a.size(), b.size());
@@ -399,7 +404,8 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
   else {
     //If matrix[i][j] was computed by incrementing the diagonal value
     //printf("Vamos para a diagonal\n");
-    int value = n[i - 1]; //Value to be appended to the end of the subsequence
+    //int value = n[i - 1]; //Value to be appended to the end of the subsequence
+    int value = n[i - 2]; //Value to be appended to the end of the subsequence
 
     std::set<std::vector<int>> a = findAllLCS(matrix, i - 1, j - 1, n, m);
     //printf("Vamos extender as sequências. O nº de sequências é %ld e vamos extendê-las com %d\n", a.size(), value);
@@ -463,8 +469,10 @@ int problem2(std::vector<int> v1, std::vector<int> v2) {
     return 0;
   }
 
+  //printf("##############    Começar a Recursão #############\n");
   std::set<std::vector<int>> LCIS = findAllLCS(matrix, v1.size() + 1, v2.size() + 1, v1, v2);
-
+  //printf("###############   Acabou a Recursão ############\n");
+  //printCurrentLCSs(LCIS);
   long unsigned int maxSize = 0;
   for (auto subseq : LCIS) {      //Temos de testar com vários inputs. Não sei se todas estas subSeqs são estritamente crescentes
     if (subseq.size() > maxSize) { //Tb não estou sure se têm todas o mesmo tamanho. Se a resposta a ambas for sim,
@@ -524,11 +532,11 @@ int main() {
   if (problemType == 1) {
     stringProcessing(v1);
     //SOLUTION
-    auto result = findLengthAndNumberOfLIS(v1);
-    printf("%d %d\n", std::get<0>(result), std::get<1>(result));
-    result = problem1(v1);
-    //auto result = problem1(v1);
-    //printf("problema 1\n");
+    //auto result = findLengthAndNumberOfLIS(v1);
+    //printf("%d %d\n", std::get<0>(result), std::get<1>(result));
+    //result = problem1(v1);
+    auto result = problem1(v1);
+    //  printf("problema 1\n");
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
   }
   else if (problemType == 2) {
