@@ -468,11 +468,15 @@ int problem2(std::vector<int> v1, std::vector<int> v2) {
   if (matrix[v1.size()][v2.size()] == 0) { //If there is no common subsequence
     return 0;
   }
+  if (v1.size() == v2.size() && (long unsigned int) matrix[v1.size()][v2.size()] == v1.size()) {
+    //If v1 is the same sequence as v2
+    return matrix[v1.size()][v2.size()];
+  }
 
   //printf("##############    Começar a Recursão #############\n");
   std::set<std::vector<int>> LCIS = findAllLCS(matrix, v1.size() + 1, v2.size() + 1, v1, v2);
   //printf("###############   Acabou a Recursão ############\n");
-  //printCurrentLCSs(LCIS);
+  printCurrentLCSs(LCIS);
   long unsigned int maxSize = 0;
   for (auto subseq : LCIS) {      //Temos de testar com vários inputs. Não sei se todas estas subSeqs são estritamente crescentes
     if (subseq.size() > maxSize) { //Tb não estou sure se têm todas o mesmo tamanho. Se a resposta a ambas for sim,
