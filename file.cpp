@@ -142,6 +142,7 @@ std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
   return std::make_tuple(max_length, count);
 }
 
+
 //void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
 void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   //printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
@@ -303,7 +304,7 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
   // do aux e vais somando numa variável todas as segundas entradas dos tuplos nesse nível
 
   //TODO abstract as a function
-  printVector2(aux);
+  //printVector2(aux);
   int auxLastLevelIndex = aux.size() - 1;
   auto auxLastLevel = aux[auxLastLevelIndex];
   int sum = 0;
@@ -358,13 +359,15 @@ void printCurrentLCSs(std::set<std::vector<int>> set) {
   printf("##########################################\n");
 }
 
-
 std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int i, int j, std::vector<int> n, std::vector<int> m) {
-  //printf("-----------------------------------------------------\n");
-  //printf("           FindAllLCS\n");
-  //printf("-----------------------------------------------------\n");
-  //printf("o i é %d e o j é %d\n", i, j);
-  if (j == 0 || i == 0) {
+  /*printf("-----------------------------------------------------\n");
+  printf("           FindAllLCS\n");
+  printf("-----------------------------------------------------\n");
+  printf("o i é %d e o j é %d\n", i, j);
+  printf("O n[] aqui é %d e o m[] é %d\n", n[i - 1], m[j - 1]);
+  printf("O matrix[i - 1][j - 1] é %d\n", matrix[i - 1][j - 1]);
+  printf("O size do n é %ld,o size do m é %ld e o size da matriz é %ld\n", n.size(), m.size(),matrix.size());*/
+  if (j == 0 || i == 0 || (((long unsigned int) i <= n.size() && (long unsigned int) j <= m.size()) && matrix[i][j] == 0)) { //(matrix[i - 1][j - 1] == 0 && n[i - 1] != m[j - 1])
     //printf("aaaaaaaaa?\n");
     //printf("Chegámos ao caso base\n");
     std::set<std::vector<int>> emptySet;
@@ -456,6 +459,10 @@ int problem2(std::vector<int> v1, std::vector<int> v2) {
 
   printMatrix(matrix, v1, v2);*/
 
+  if (matrix[v1.size()][v2.size()] == 0) { //If there is no common subsequence
+    return 0;
+  }
+
   std::set<std::vector<int>> LCIS = findAllLCS(matrix, v1.size() + 1, v2.size() + 1, v1, v2);
 
   long unsigned int maxSize = 0;
@@ -517,14 +524,17 @@ int main() {
   if (problemType == 1) {
     stringProcessing(v1);
     //SOLUTION
-    auto result = problem1(v1);
-    printf("problema 1\n");
+    auto result = findLengthAndNumberOfLIS(v1);
+    printf("%d %d\n", std::get<0>(result), std::get<1>(result));
+    result = problem1(v1);
+    //auto result = problem1(v1);
+    //printf("problema 1\n");
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
   }
   else if (problemType == 2) {
     stringProcessing(v1);
     stringProcessing(v2);
-    printf("problema 2\n");
+    //printf("problema 2\n");
     auto result = problem2(v1, v2);
     printf("%d\n", result);
   }
