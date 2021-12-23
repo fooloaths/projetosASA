@@ -7,6 +7,7 @@
 #define V1 1
 #define V2 2
 
+
 void stringProcessing(std::vector<int> &v, std::unordered_map<int, int> &map, int context) {
   int c, num, digit, isNegative, isNumber;
 
@@ -44,12 +45,14 @@ void stringProcessing(std::vector<int> &v, std::unordered_map<int, int> &map, in
   }
   v.push_back(num);
   num = 0;
+
 }
 
 void populatePair(int value, int frequency, std::vector<int> &v) {
   v.push_back(value);
   v.push_back(frequency);
 }
+
 
 void insert(std::vector<std::vector<int>> &arr, std::vector<int> pair) {
   int cmp = pair[0];
@@ -73,7 +76,6 @@ int count(std::vector<std::vector<int>> &pares, int k) {
     int sizeLIS = pares.size();
     int counter = 0;
     int j = sizeLIS - 1;
-
     while ((j >= 0) && (pares[j][0]) < k) {
       counter += pares[j][1];
       j--;
@@ -83,7 +85,6 @@ int count(std::vector<std::vector<int>> &pares, int k) {
       pares.insert(pares.begin() + j, pares[j]);
       return DUPLICATE;
     }
-
     return counter;
 }
 
@@ -99,6 +100,12 @@ void processValue(std::vector<std::vector<std::vector<int>>> &arr, int k) {
     
     auto counter = count(arr[i], k);
     if (counter == DUPLICATE) {
+      if (i > 0) { //If it isn't the lowest level
+        counter = count(arr[i - 1], k);
+        std::vector<int> pair = std::vector<int>();
+        populatePair(k, counter, pair);
+        insert(arr[i], pair);
+      }
       break;
     }
     if (counter > 0) {
@@ -146,7 +153,6 @@ std::vector<int> problem1(std::vector<int> nums) {
 
     processValue(aux, k);
   }
-
   int auxLastLevelIndex = aux.size() - 1;
   auto auxLastLevel = aux[auxLastLevelIndex];
   int sum = 0;
