@@ -3,12 +3,8 @@
 #include <tuple>
 #include <set>
 #include <cstring>
-#include <string.h>
 
 #define DUPLICATE -1
-
-/* Se o count num nível é 0, mas encontrámos um tuplo com K igual ao que queremos inserir, então temos de aumentar o nº
- de subsequências de forma proporcional. A forma mais fácil deve ser duplicar esse tuplo (crying inside) */
 
 //*************************************TESTING FUNCTIONS******************************************
 void printVector(std::vector<std::tuple<int, int>> v){
@@ -81,69 +77,7 @@ void stringProcessing(std::vector<int> &v){
   }
 }
 
-//O(n^2) needs to be O(nlog(n))
-//solves problem 1, finding the size and the number of longest increasing subsequences
-//this is not the best algorithm, but it works for testing purposes
-std::tuple<int, int> findLengthAndNumberOfLIS(std::vector<int> nums)
-{
-  //Base Case
-  int n = nums.size();
-  
-  if (n == 0)
-    return std::make_tuple(0, 0);
- 
-  //Initialize dp_l array with
-  // 1s
-  std::vector<int> dp_l(n, 1);
- 
-  //Initialize dp_c array with
-  // 1s
-  std::vector<int> dp_c(n, 1);
- 
-  for (int i = 0; i < n; i++)
-  {
-    for (int j = 0; j < i; j++)
-    {
-      //If current element is
-      // smaller
-      if (nums[i] <= nums[j])
-        continue;
- 
-      if  (dp_l[j] + 1 > dp_l[i])
-      {
-        dp_l[i] = dp_l[j] + 1;
-        dp_c[i] = dp_c[j];
-      }
-      else if (dp_l[j] + 1 == dp_l[i])
-        dp_c[i] += dp_c[j];
-    }
-  }
- 
-  //Store the maximum element
-  // from dp_l
-  int max_length = 0;
- 
-  for (int i : dp_l)
-    max_length = std::max(i,max_length);
- 
-  //Stores the count of LIS
-  int count = 0;
- 
-  //Traverse dp_l and dp_c
-  // simultaneously
-  for(int i = 0; i < n; i++)
-  {
-    //Update the count
-    if (dp_l[i] == max_length)
-      count += dp_c[i];
-  }
-   
-  //Return the count of LIS
-  return std::make_tuple(max_length, count);
-}
 
-
-//void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
 void insert(std::vector<std::tuple<int, int>> &arr, std::tuple<int, int> t) {
   //printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
   //printf("                    insert\n");
@@ -190,18 +124,7 @@ int count(std::vector<std::tuple<int, int>> &pares, int k) {
       pares.insert(pares.begin() + j, pares[j]);
       return DUPLICATE;
     }
-    
-    /*std::vector<std::tuple<int, int>>::reverse_iterator j = pares.rbegin();
-    for (; j != pares.rend() && (std::get<0>(*j) < k); j++) {
-      counter += std::get<1>(*j);
-    }*/
-    /*while ((j < sizeLIS) && (std::get<0>(pares[j]) < k)) {
-      counter += std::get<1>(pares[j]);
-      j++;
-    }*/
-    /*if (std::get<0>(*j) == k) {
-      j = pares.erase(j);  //Vamos ter de usar ponteiros para isto funcionar. Se partir algo, remover isto
-    }*/
+
     //printf("?????????????????????????????????????????????????\n");
     return counter;
 }
@@ -278,8 +201,6 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
     aux.push_back(tmp);
   }
 
-  //auto firstLevel = aux[0];
-
   for (int i = 1; i < size; i++) {
     int k = nums[i];
     //int sizeFirstLevel = firstLevel.size();
@@ -300,9 +221,6 @@ std::tuple<int, int> problem1(std::vector<int> nums) {
     printf("???????????????\n");*/
   }
   
-  // aí talvez seja melhor fazermos um for loop extra, em que percorres só o último nível 
-  // do aux e vais somando numa variável todas as segundas entradas dos tuplos nesse nível
-
   //TODO abstract as a function
   //printVector2(aux);
   int auxLastLevelIndex = aux.size() - 1;
@@ -372,7 +290,6 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
   }
   printf("O size do n é %ld,o size do m é %ld e o size da matriz é %ld\n", n.size(), m.size(),matrix.size());*/
   if (j == 1 || i == 1 || (((long unsigned int) i <= n.size() && (long unsigned int) j <= m.size()) && matrix[i][j] == 0)) { //(matrix[i - 1][j - 1] == 0 && n[i - 1] != m[j - 1])
-    //printf("aaaaaaaaa?\n");
     //printf("Chegámos ao caso base\n");
     std::set<std::vector<int>> emptySet;
     return emptySet;
@@ -389,7 +306,6 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
     //}
     //if (matrix[i - 1][j - 2] >= matrix[i - 2][j - 1]) {
       //If value came from cell directly above
-      //printf("cccccccccc\n");
       b = findAllLCS(matrix, i, j - 1, n, m);
     //}
 
@@ -423,14 +339,11 @@ std::set<std::vector<int>> findAllLCS(std::vector<std::vector<int>> matrix, int 
       a.insert(seq);
       result = a;
     }
-    //printf("bbbbbbbbbbbbbbbb\n");
     //printCurrentLCSs(result);
-    //printf("aaaaaaaaaaaaaaa\n");
     return result;
   }
 }
 
-//int** computeLCSMatrix(std::vector<int> v1, std::vector<int> v2) {
 std::vector<std::vector<int>>  computeLCSMatrix(std::vector<int> v1, std::vector<int> v2) {
 
   std::vector<std::vector<int>> matrix(v1.size() + 1, std::vector<int>(v2.size() + 1, 0));
@@ -452,7 +365,6 @@ std::vector<std::vector<int>>  computeLCSMatrix(std::vector<int> v1, std::vector
 }
 
 //given two vectors, find the longest common subsequence
-//TODO change to be longest common strictly increasing subsequence
 int problem2(std::vector<int> v1, std::vector<int> v2) {
   std::vector<std::vector<int>> matrix = computeLCSMatrix(v1, v2);
 
@@ -488,43 +400,6 @@ int problem2(std::vector<int> v1, std::vector<int> v2) {
 }
 
 
-/*std::set<std::vector<int>> findAllLCS(int **matrix, int i, int j, std::vector<int> n, std::vector<int> m) {
-  if (j == 0 || i == 0) {
-    std::set<std::vector<int>> emptySet;
-    return emptySet;
-  }
-  else if (n[i] != m[j]) { //If matrix[i][j] was computed from cell directly above or to the left
-
-    std::set<std::vector<int>> a;
-    std::set<std::vector<int>> b;
-    if (matrix[i - 1][j] >= matrix[i][j - 1]) {
-      //If value came from cell to the left
-      a = findAllLCS(matrix, i - 1, j, n, m);
-    }
-    if (matrix[i][j - 1] >= matrix[i - 1][j]) {
-      //If value came from cell directly above
-      b = findAllLCS(matrix, i, j - 1, n, m);
-    }
-
-    //Combine results and return
-    a = mergeSets(a,b);
-    return a;
-    //return mergeSets(a, b);
-  }
-  //else if (n[i] == m[j]) {
-  else {
-    //If matrix[i][j] was computed by incrementing the diagonal value
-
-    int value = n[i]; //Value to be appended to the end of the subsequence
-
-    std::set<std::vector<int>> a = findAllLCS(matrix, i - 1, j - 1, n, m);
-
-    //Combine results
-    std::set<std::vector<int>> result = extendSequences(a, value);
-    return result;
-  }
-}*/
-
 int main() {  
   std::vector<int> v1;
   std::vector<int> v2;
@@ -535,18 +410,12 @@ int main() {
 
   if (problemType == 1) {
     stringProcessing(v1);
-    //SOLUTION
-    //auto result = findLengthAndNumberOfLIS(v1);
-    //printf("%d %d\n", std::get<0>(result), std::get<1>(result));
-    //result = problem1(v1);
     auto result = problem1(v1);
-    //  printf("problema 1\n");
     printf("%d %d\n", std::get<0>(result), std::get<1>(result));
   }
   else if (problemType == 2) {
     stringProcessing(v1);
     stringProcessing(v2);
-    //printf("problema 2\n");
     auto result = problem2(v1, v2);
     printf("%d\n", result);
   }
