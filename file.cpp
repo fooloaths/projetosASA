@@ -72,10 +72,7 @@ int count(std::vector<std::vector<int>> &pares, int k) {
       return DUPLICATE;
     }
 
-    return counter;
-}
-
-void processValue(std::vector<std::vector<std::vector<int>>> &arr, int k) {
+void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
   int size = arr.size();
 
   for (int i = size - 1; i >= 0; i--) {
