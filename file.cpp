@@ -7,6 +7,14 @@
 #define V1 1
 #define V2 2
 
+/*void printPair(std::vector<int> t) {
+  if (t.size() == 2) {
+    printf("[%d, %d]", t[0], t[1]);
+  }
+  else {
+    printf("Estavamos à espera de um par, mas recebemos algo diferente\n");
+  }
+}*/
 
 void stringProcessing(std::vector<int> &v, std::unordered_map<int, int> &map, int context) {
   int c, num, digit, isNegative, isNumber;
@@ -53,16 +61,22 @@ void populatePair(int value, int frequency, std::vector<int> &v) {
   v.push_back(frequency);
 }
 
-
 void insert(std::vector<std::vector<int>> &arr, std::vector<int> pair) {
   int cmp = pair[0];
 
+  //printf("O par é "); printPair(pair); printf("\n");
   if (arr[arr.size() - 1][0] > cmp) { //If it is smaller than the smallest tuple on this level
     arr.push_back(pair);
   }
   for (long unsigned int i = 0; i < arr.size(); i++) {
     if (arr[i][0] == cmp) {
-      arr[i] = pair;
+      long unsigned int j = i;
+      if (((i + 1) < arr.size()) && (arr[i + 1][0] == cmp)) {
+        j++;
+      }
+      //printf("Estamos no par nº %ld\n", i);
+      //printf("aaaaaaaaaaa\nVamos meter no par "); printPair(arr[i]); printf(" o par "); printPair(pair);
+      arr[j] = pair;
       break;
     }
     else if (arr[i][0] < cmp) {
@@ -76,8 +90,11 @@ int count(std::vector<std::vector<int>> &pares, int k) {
     int sizeLIS = pares.size();
     int counter = 0;
     int j = sizeLIS - 1;
+
     while ((j >= 0) && (pares[j][0]) < k) {
-      counter += pares[j][1];
+      //if (pares[j][0] < k) { //Conditional is a hack to prevent problems with insert at line 86
+        counter += pares[j][1];
+      //}
       j--;
     }
     if (j < 0) {j++;}
@@ -93,7 +110,7 @@ void processValue(std::vector<std::vector<std::vector<int>>> &arr, int k) {
 
   for (int i = size - 1; i >= 0; i--) {
     auto pares = arr[i];
-
+    
     if (k < pares[pares.size() - 1][0]) {
       continue;
     }
@@ -153,6 +170,7 @@ std::vector<int> problem1(std::vector<int> nums) {
 
     processValue(aux, k);
   }
+
   int auxLastLevelIndex = aux.size() - 1;
   auto auxLastLevel = aux[auxLastLevelIndex];
   int sum = 0;
