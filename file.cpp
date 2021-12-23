@@ -54,17 +54,6 @@ int count(std::vector<std::tuple<int, int>> &pares, int k) {
     return counter;
 }
 
-int tupleInLevel(int k, std::vector<std::tuple<int, int>> &arr) {
-
-  int size = arr.size() - 1;  
-  for (int i = 0; i < size; i++) {
-    if (std::get<0>(arr[i]) == k) {
-      return std::get<1>(arr[i]);
-    }
-  }
-  return 0;
-}
-
 void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
   int size = arr.size();
   for (int i = size - 1; i >= 0; i--) {
