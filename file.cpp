@@ -1,31 +1,43 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 
 #define DUPLICATE -1
+#define V1 1
+#define V2 2
 
-void stringProcessing(std::vector<int> &v) {
-  int c, num, digit, isNegative;
+void stringProcessing(std::vector<int> &v, std::unordered_map<int, int> &map, int context) {
+  int c, num, digit, isNegative, isNumber;
 
   num = 0;
   digit = 0;
   isNegative = 0;
+  isNumber = 0;
   while (((c = getchar()) != EOF) && (c != '\n')) {
     if (c == '-') {
       isNegative = 1;
     }
     if (('0' <= c) && (c <= '9')) {
+      isNumber = 1;
       digit = c - '0';
       num = num * 10 + digit;
     }
-    if (c == ' ') {
+    if (c == ' ' && isNumber) {
       if (isNegative) {
         num *= -1;
         isNegative = 0;
       }
-      v.push_back(num);
+      if (context == V1 || ((context == V2) && (map[num] == -1))) {
+        v.push_back(num);
+        map[num] = -1;
+      }
       num = 0;
+      isNumber = 0;
     }
+  }
+  if (context == V1) {
+    map[num] = -1;
   }
   if (isNegative) {
     num *= -1;
@@ -72,7 +84,10 @@ int count(std::vector<std::vector<int>> &pares, int k) {
       return DUPLICATE;
     }
 
-void processValue(std::vector<std::vector<std::tuple<int, int>>> &arr, int k) {
+    return counter;
+}
+
+void processValue(std::vector<std::vector<std::vector<int>>> &arr, int k) {
   int size = arr.size();
 
   for (int i = size - 1; i >= 0; i--) {
@@ -146,37 +161,37 @@ std::vector<int> problem1(std::vector<int> nums) {
 
 int problem2(std::vector<int> v1, std::vector<int> v2) {
   std::vector<int> lcisTable = std::vector<int>(v2.size(), 0);
-  for (long unsigned int i = 0; i < v1.size(); i++) {
-    int curLen = 0;
+  for (auto value : v1) {
+    int currentLength = 0;
     for (long unsigned int k = 0; k < v2.size(); k++) {
-      if ((v1.at(i) == v2.at(k)) && (curLen + 1 > lcisTable.at(k))) {
-        lcisTable.at(k) = curLen + 1;
+      if ((value == v2[k]) && ((currentLength + 1) > lcisTable[k])) {
+        lcisTable[k] = currentLength + 1;
       }
-      if ((v1.at(i) > v2.at(k)) && (lcisTable.at(k) > curLen)) {
-        curLen = lcisTable.at(k);
+      if ((value > v2[k]) && (lcisTable[k] > currentLength)) {
+        currentLength = lcisTable[k];
       }
     }
-  } 
+  }
   return *std::max_element(lcisTable.begin(), lcisTable.end());
 }
 
 int main() {  
   std::vector<int> v1 = std::vector<int>();
   std::vector<int> v2 = std::vector<int>();
+  std::unordered_map<int, int> map = std::unordered_map<int, int>();
   int problemType;
 
   int p = scanf("%d\n", &problemType);
   if (p != 1) { return(1); }
 
   if (problemType == 1) {
-    //v1 = stringProcessing();
-    stringProcessing(v1);
+    stringProcessing(v1, map, V1);
     auto result = problem1(v1);
     printf("%d %d\n", result[0], result[1]);
   }
   else if (problemType == 2) {
-    stringProcessing(v1);
-    stringProcessing(v2);
+    stringProcessing(v1, map, V1);
+    stringProcessing(v2, map, V2);
     auto result = problem2(v1, v2);
     printf("%d\n", result);
   }
