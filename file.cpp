@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #define DUPLICATE -1
 
@@ -146,9 +147,25 @@ std::vector<int> problem1(std::vector<int> nums) {
   return result;
 }
 
+int problem2(std::vector<int> v1, std::vector<int> v2) {
+  std::vector<int> lcisTable = std::vector<int>(v2.size(), 0);
+  for (long unsigned int i = 0; i < v1.size(); i++) {
+    int curLen = 0;
+    for (long unsigned int k = 0; k < v2.size(); k++) {
+      if ((v1.at(i) == v2.at(k)) && (curLen + 1 > lcisTable.at(k))) {
+        lcisTable.at(k) = curLen + 1;
+      }
+      if ((v1.at(i) > v2.at(k)) && (lcisTable.at(k) > curLen)) {
+        curLen = lcisTable.at(k);
+      }
+    }
+  } 
+  return *std::max_element(lcisTable.begin(), lcisTable.end());
+}
+
 int main() {  
   std::vector<int> v1 = std::vector<int>();
-  //std::vector<int> v2 = std::vector<int>();
+  std::vector<int> v2 = std::vector<int>();
   int problemType;
 
   int p = scanf("%d\n", &problemType);
@@ -160,12 +177,12 @@ int main() {
     auto result = problem1(v1);
     printf("%d %d\n", result[0], result[1]);
   }
-  /*else if (problemType == 2) {
+  else if (problemType == 2) {
     stringProcessing(v1);
     stringProcessing(v2);
     auto result = problem2(v1, v2);
     printf("%d\n", result);
-  }*/
+  }
   else { return -1;}
   return 0;
 }
