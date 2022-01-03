@@ -59,19 +59,19 @@ void insert(std::vector<std::vector<long long int>> &arr, std::vector<long long 
   if (arr[arr.size() - 1][0] > cmp) { //If it is smaller than the smallest tuple on this level
     arr.push_back(pair);
   }
-  for (long unsigned int i = arr.size() - 1; i >= 0; i--) {
-    if (arr[i][0] == cmp) {
-      long unsigned int j = i;
-      if (((i + 1) < arr.size()) && (arr[i + 1][0] == cmp)) {
+  for (long unsigned int i = arr.size(); i > 0; i--) {
+    if (arr[i - 1][0] == cmp) {
+      long unsigned int j = i - 1;
+      if ((i < arr.size()) && (arr[i][0] == cmp)) {
         j++;
       }
       arr[j] = pair;
       break;
     }
-    else if (arr[i][0] > cmp) {
-      arr.insert(arr.begin() + i, pair);
+    else if (arr[i - 1][0] > cmp) {
+      arr.insert(arr.begin() + i - 1, pair);
       break;
-    } 
+    }
   }
 }
 
