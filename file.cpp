@@ -96,6 +96,7 @@ void processValue(std::vector<std::vector<std::vector<long long int>>> &arr, lon
   long unsigned int size = arr.size();
 
   for (long unsigned int i = size - 1; i >= 0; i--) {
+    printf("%lld\n", k);
     auto pares = arr[i];
     
     if (k < pares[pares.size() - 1][0]) {
